@@ -1,8 +1,12 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as bodyParser from 'body-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger, VersioningType } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  VersioningType,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
@@ -17,6 +21,9 @@ async function bootstrap() {
 
   //Enable Log
   app.useLogger(app.get(Logger));
+
+  //Enable Entity Exclude Class transformer
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   //SET 50mb size body request
   app.use(bodyParser.json({ limit: '50mb' }));
